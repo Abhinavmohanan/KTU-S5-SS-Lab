@@ -1,0 +1,13 @@
+PGM START 0
+ABC MACRO &A,&B,&C 
+-   STA &A 
+-   STB &B
+-   STC &C
+-   MEND    -
+-   ABC    P,Q,K
+-   ABC    R,S,L
+P   RESW    1
+Q   RESW    1
+R   RESW    1
+S   RESW    1
+-   END -

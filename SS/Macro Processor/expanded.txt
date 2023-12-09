@@ -1,0 +1,14 @@
+PGM START 0
+. ABC P,Q,K
+- STA P
+- STB Q
+- STC K
+. ABC R,S,L
+- STA R
+- STB S
+- STC L
+P RESW 1
+Q RESW 1
+R RESW 1
+S RESW 1
+- END -
