@@ -1,7 +1,7 @@
 data segment
     msg2 db 10,13,'number is prime$'
     msg3 db 10,13,'not prime$'     
-    number equ 0Ah 
+    number equ 0017h 
 data ends
     
 display macro msg
@@ -13,23 +13,21 @@ endm
 code segment            
     assume cs:code ds:data
     start:
-        mov ax,data
-        mov ds,ax
-        mov bl,02h
-        mov al,number   
-        mov ah,0
-        div bl
-        mov cl,al
-        mov bl,01h
-    next:
-        inc bl
-        mov al,number 
-        mov ah,0
-        div bl
-        cmp ah,00h
-        jz notprime
+        mov ax,data 
+        mov ds,ax 
+        mov bx,0002h
+        mov AX,number 
+        div bx  
+        mov cx,ax
+        mov bx,0001h
+    next: 
+        mov dx,0
+        mov ax,number
+        inc bx
+        div bx 
+        cmp dx,0
+        je notprime
         loop next
-
     prime:
         display msg2
         jmp xx
