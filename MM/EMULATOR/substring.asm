@@ -1,6 +1,6 @@
 data segment
-    str1 db 'ABDCAADEFG$'
-    substr db 'DEF$' 
+    str1 db 'ABABCD$'
+    substr db 'ABCD$' 
     sublen equ $-substr
     msg1 db 10,13,'Substring found at : $' 
     msg2 db 10,13,'Substring not found$'
@@ -37,11 +37,11 @@ check_string:
     inc si
     inc di
     mov al,[di]
-    mov bl,[si]
-    cmp al,bl
-    je check_string
+    mov bl,[si] 
     cmp al,'$'
     je found
+    cmp al,bl
+    je check_string
     jne reset 
     
 found:

@@ -158,4 +158,7 @@ void main(){
 
     fclose(inputfile);
     fclose(expanded);
+    fclose(nametabfile);
+    fclose(argtabfile);
+    fclose(deftabfile);
 }
