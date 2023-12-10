@@ -1,65 +1,129 @@
-#include <stdio.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<stdbool.h>
 
-#include <stdlib.h>
+int dIndex = -1;
 
-int files[50], indexBlock[50], indBlock, n;
-void recurse1();
-void recurse2();
+struct{
+    char filename[100];
+    int indexBlock;
+    int noBlocks;
+    bool isAllocated;
+}directory[10];
 
-void recurse1(){
-    printf("Enter the index block: ");
-    scanf("%d", &indBlock);
-    if (files[indBlock] != 1){
-        printf("Enter the number of blocks required for the file : ", indBlock);
-        scanf("%d", &n);
-    }
-    else{
-        printf("%d is already allocated\n", indBlock);
-        recurse1();
-    }
-    recurse2();
+struct diskStruct{
+    int blockNo;
+    int fileNo;
+    bool isAllocated;
+    bool isIndexBlock;
+    int indexedBlocks[100];
+}disk[100];
+
+
+
+void createFile(){
+    dIndex++;
+    char name[100];
+    printf("\nEnter name of file :");
+    scanf("%s",&directory[dIndex].filename);
 }
 
-void recurse2(){
-    int ch;
-    int flag = 0;
-    printf("\nEnter %d block numbers to allocate the file to : \n",n);
-    for (int i=0; i<n; i++){
-        scanf("%d", &indexBlock[i]);
-        if (files[indexBlock[i]] == 0)
-            flag++;
+void allocateBlock(){
+    if(dIndex == -1) {
+        printf("No files to allocate blocks");
+        return;
     }
-    if (flag == n){
-        for (int j=0; j<n; j++){
-            files[indexBlock[j]] = 1;
+    int fno,indexNo;
+    printf("\nEnter the file no. to allocate blocks (0-%d): ",dIndex);
+
+    if(directory[fno].isAllocated == true){
+        printf("\nBlocks are already allocated to file !");
+        return;
+    }
+
+    scanf("%d",&fno);
+
+    if(fno > dIndex || fno < 0){
+        printf("\nEnter valid file number ");
+        return;
+    }
+
+    printf("\nEnter the index block no of file (%d): ",fno);
+
+    scanf("%d",&indexNo);
+
+    if(disk[indexNo].isAllocated == true){
+        printf("\nError failed to allocated ,the block is already occupied");
+        return;
+    }else{
+        disk[indexNo].isAllocated = true;
+        disk[indexNo].isIndexBlock = true;
+        disk[indexNo].fileNo = fno;
+        int blockcount;
+        printf("\nEnter no. of blocks to allocate to file : ");
+        scanf("%d",&blockcount);
+        directory[fno].noBlocks = blockcount;
+        directory[fno].indexBlock = indexNo;
+
+
+        int blocklist[blockcount];
+        printf("\nEnter list of block numbers to allocate : ");
+        for(int i = 0 ; i < blockcount;i++){
+            scanf("%d",&blocklist[i]);
+            if(disk[blocklist[i]].isAllocated == true){
+                printf("Error allocating block , block %d is already occupied",blocklist[i]);
+                return;
+            }
         }
-        printf("Allocated\n");
-        printf("File Indexed\n");
-        for (int k=0; k<n; k++){
-            printf("%d index to %d : %d\n", indBlock, indexBlock[k], files[indexBlock[k]]);
+
+        for(int i = 0 ; i < blockcount;i++){
+            disk[indexNo].indexedBlocks[i] = blocklist[i];
+            disk[blocklist[i]].isAllocated = true;
+            disk[blocklist[i]].fileNo = fno;
+        }
+        directory[fno].isAllocated = true;
+        printf("Blocks allocated successfully");
+    }
+}
+
+void listFiles(){
+     if(dIndex == -1) {
+        printf("No files to list blocks");
+        return;
+    }
+    int fno,indexNo;
+    printf("\nEnter the file no. to list blocks allocated (0-%d): ",dIndex);
+
+    scanf("%d",&fno);
+
+    if(directory[fno].isAllocated != true){
+        printf("\nBlocks not allocated to file !");
+        return;
+    }
+
+    if(fno > dIndex || fno < 0){
+        printf("\nEnter valid file number ");
+        return;
+    }
+    int indexBlock = directory[fno].indexBlock;
+    printf("\n File %s index block : %d",directory[fno].filename,indexBlock);
+    for(int i = 0 ; i < directory[fno].noBlocks ; i++){
+        printf("\n%d indexed to %d",indexBlock,disk[indexBlock].indexedBlocks[i]);
+    }
+}
+
+
+void main(){
+    int option;
+    while(1){
+        printf("\n\nChoose option : \n1.Create a new file\n2.Allocate Blocks to file\n3.List files and block\n: ");
+        scanf("%d",&option);
+
+        switch(option){
+            case 1: createFile();break;
+            case 2: allocateBlock();break;
+            case 3: listFiles();break;
+            default: exit(0);
         }
     }
-    else{
-        printf("File in the index is already allocated\n");
-        printf("Enter another indexed file\n");
-        recurse2();
-    }
-    printf("Do you want to enter more files?\n");
-    printf("1 = Yes, 0 = No");
-    scanf("%d", &ch);
-    if (ch == 1)
-        recurse1();
-    else
-        exit(0);
-    return;
 }
-
-int main()
-{
-    for(int i=0;i<50;i++)
-        files[i]=0;
-
-    recurse1();
-    return 0;
-}
-
